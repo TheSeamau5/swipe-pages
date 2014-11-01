@@ -4,5 +4,3 @@ dist
 .tmp
 .editorconfig
 .jshintrc
-.gitattributes
-.bowerrc
