@@ -69,7 +69,11 @@ transition. A `threshold` value of 1 implies that no page transition is possible
 as you must cross more that the entire size of the `swipe-pages` element horizontally
 which is impossible given that the size of the `swipe-pages` element is well-defined.
 
+@class swipe-pages
+@blurb Provides horizontally swipeable pages.
+@status alpha
 -->
+
 
 <link rel="import" href="../polymer/polymer.html">
 
@@ -123,20 +127,39 @@ which is impossible given that the size of the `swipe-pages` element is well-def
 
 
       Polymer({
-        // Return the number of pages currently
+
         get pageCount() {
           return numberOfPages;
         },
 
         publish: {
 
-          //defines which page is currently selected
+          /**
+          * Specifies the index of the currently selected page
+          * @attribute selected
+          * @default null
+          * @type Number
+          */
           selected: null,
 
-          //sets the threshold beyond which a page will transition to another
+          /**
+          * Specifies the threshold the user must swipe in order to
+          * cause a page transition.
+          * Only accepts values between 0 and 1.
+          * @attribute threshold
+          * @default 0.3
+          * @type Number
+          */
           threshold: 0.3,
 
           //sets the duration of the transition from one page to another
+          /**
+          * Specifies the duration (in seconds) of the transition from one
+          * page to another
+          * @attribute transitionDuration
+          * @default 0.3
+          * @type Number
+          */
           transitionDuration: 0.3
 
         },
