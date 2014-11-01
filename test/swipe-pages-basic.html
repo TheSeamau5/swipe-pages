@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>swipe-pages</title>
+
+  <script src="../../platform/platform.js"></script>
+  <link rel="import" href="../../polymer-test-tools/tools.html">
+  <script src="../../polymer-test-tools/htmltest.js"></script>
+
+  <!-- Step 1: import the element to test -->
+  <link rel="import" href="../swipe-pages.html">
+
+</head>
+<body>
+
+  <swipe-pages></swipe-pages>
+
+  <script>
+
+    document.addEventListener('polymer-ready', function() {
+      // Test a property
+      var myEl = document.querySelector('swipe-pages');
+      assert.equal(myEl.author, 'Dimitri Glazkov');
+
+      // Test a method
+      var hello = myEl.sayHello();
+      assert.equal(hello, 'swipe-pages says, Hello World!');
+      var greetings = myEl.sayHello('greetings Earthlings');
+      assert.equal(greetings, 'swipe-pages says, greetings Earthlings');
+
+      // Test an event
+      myEl.addEventListener('swipe-pages-lasers-success', function(event) {
+        assert.equal(event.detail.sound, 'Pew pew pew!');
+        // IMPORTANT:
+        // Make sure to call done() at the end of every test suite!
+        done();
+      });
+      myEl.fireLasers();
+    });
+
+  </script>
+
+</body>
+</html>
