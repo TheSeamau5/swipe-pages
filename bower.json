@@ -1,6 +1,15 @@
 {
   "name": "swipe-pages",
   "version": "0.1.0",
+  "ignore" : [
+    ".editorconfig",
+    ".jshintrc",
+    ".gitignore",
+    ".bowerrc",
+    "test",
+    "bower.json",
+    ".gitattributes"
+  ],
   "keywords": [
     "seed",
     "polymer",
