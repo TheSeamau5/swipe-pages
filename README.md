@@ -5,4 +5,10 @@ See the [component page](http://TheSeamau5.github.io/swipe-pages) for more infor
 
 ## Getting Started
 
-We've put together a [guide for swipe-pages](http://www.polymer-project.org/docs/start/reusableelements.html) to help get you rolling.
+    <swipe-pages>
+      <swipe-page>I am page 0<swipe-page>
+      <swipe-page>I am page 1<swipe-page>
+      <swipe-page>I am page 2<swipe-page>
+    </swipe-pages>
+
+    
