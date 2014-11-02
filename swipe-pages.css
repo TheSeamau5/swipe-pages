@@ -3,10 +3,13 @@
   overflow: hidden;
 }
 
-.viewContent{
-  display: inline-flex;
+.container{
   height: 100%;
-  overflow: hidden;
+  width: 100%;
+}
+
+.viewContent{
+  height: 100%;
 
   /* The following is a hack to solve a chrome bug where the page
      flashes white. This bug still exists in chrome for android while

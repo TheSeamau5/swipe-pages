@@ -35,7 +35,7 @@ of the parent element. This means that the `swipe-page` elements are assumed
 to all have the exact same size which they all derive from the `swipe-pages`
 element.
 
-Example:
+###Example:
 
     <swipe-pages selected = "1">
       <swipe-page>Hey I'm page 0</swipe-page>
@@ -52,7 +52,7 @@ between pages.
 Pages only transition when the swipe gesture has crossed a certain threshold
 which is exposed by the `threshold` attribute.
 
-Example:
+###Example:
 
     <swipe-pages threshold = "0.5">
       <swipe-page> ... </swipe-page>
@@ -74,7 +74,6 @@ which is impossible given that the size of the `swipe-pages` element is well-def
 @status alpha
 -->
 
-
 <link rel="import" href="../polymer/polymer.html">
 
 <link rel="import" href="swipe-page.html">
@@ -83,64 +82,66 @@ which is impossible given that the size of the `swipe-pages` element is well-def
 <polymer-element name="swipe-pages" attributes="selected threshold transitionDuration">
   <template>
     <link rel="stylesheet" href="swipe-pages.css">
-
-    <div class="viewContent" id="viewContent">
-      <content id="items" select="swipe-page"></content>
+    <div class="container">
+      <div class="viewContent" id="viewContent">
+        <content class="page" id="items" select="swipe-page"></content>
+      </div>
     </div>
-
-
   </template>
   <script>
-    (function() {
+    (function(){
       'use strict';
-      // Private properties
-      // The offset represents the offset position of the viewContent
-      var offset = {
-        x: 0,
-        y: 0
-      };
-      // pageHeight and pageWidth represent the dimensions of the individual pages
-      // Note: This assumes that each individual page has the same dimensions as the host
-      // or parent container
-      // By default, this is the same as the viewport
-      // TODO: Actually make the default work. Currently it is automatically overridden
-      // TODO: Allow for dynamic resizing of the pages
-      // TODO: Allow for pages with varying sizes
-      var pageHeight = window.innerHeight;
-      var pageWidth = window.innerWidth;
-      // Private variable to keep track of the number of pages
-      // TODO: Allow for dynamic adding and subtracting of pages. Assumed static.
-      var numberOfPages = 0;
 
-      // Noticed that on safari `transform` is not autoprefixed...
-      // TODO: Get rid of this hack!
       var isWebkit = document.body.style.webkitTransform !== undefined;
 
-      var setPageTransitionSpeedInCSS = function(element, duration) {
-        if (isWebkit) {
+      var transitionToPosition = function(element, position){
+        var transition = "translateX(" + position.toString() + "%)";
+        if (isWebkit){
+          element.style.webkitTransform = transition;
+        }else{
+          element.style.transform = transition;
+        }
+      };
+
+      var transitionToPage = function(element, pageNumber, pageCount){
+        transitionToPosition(element, -pageNumber / pageCount * 100);
+      };
+
+      var resetAnimations = function(element){
+        if (isWebkit){
+          element.style.webkitTransition = "";
+        }else{
+          element.style.transition = "";
+        }
+      };
+
+      var setPageTransitionDuration = function(element, duration){
+        if (isWebkit){
           element.style.webkitTransition = "-webkit-transform " + duration.toString() + "s ease-out";
-        } else {
-          element.style.transition = "transform " + duration.toString() + "s";
+        }else{
+          element.style.transition = "transform " + duration.toString() + "s ease-out";
         }
       };
 
 
-
       Polymer({
 
-        get pageCount() {
-          return numberOfPages;
+        get pageCount(){
+          return this.$.items.getDistributedNodes().length;
         },
 
-        publish: {
+        get pageWidth(){
+          return this.getBoundingClientRect().width;
+        },
 
+        publish : {
           /**
           * Specifies the index of the currently selected page
           * @attribute selected
-          * @default null
+          * @default 0
           * @type Number
           */
-          selected: null,
+          selected: 0,
 
           /**
           * Specifies the threshold the user must swipe in order to
@@ -152,7 +153,6 @@ which is impossible given that the size of the `swipe-pages` element is well-def
           */
           threshold: 0.3,
 
-          //sets the duration of the transition from one page to another
           /**
           * Specifies the duration (in seconds) of the transition from one
           * page to another
@@ -161,112 +161,72 @@ which is impossible given that the size of the `swipe-pages` element is well-def
           * @type Number
           */
           transitionDuration: 0.3
+        },
 
-        },
-        selectedChanged: function(oldValue, newValue) {
-          if (newValue >= this.pageCount || newValue < 0) {
-            throw "Tried to select undefined page."
+        selectedChanged: function(oldValue, newValue){
+          if (newValue >= this.pageCount || newValue < 0){
+            throw "Tried to selected an undefined page.";
           }
-          this.transitionToPage(newValue);
-          this.resetOffset();
+          transitionToPage(this.$.viewContent, newValue, this.pageCount);
         },
-        transitionToPosition: function(position) {
 
-          if (isWebkit) {
-            this.$.viewContent.style.webkitTransform = "translateX(" + position.toString() + "px)";
-          } else {
-            this.$.viewContent.style.transform = "translateX(" + position.toString() + "px)";
-          }
+        ready: function(){
 
-        },
-        transitionToPage: function(page) {
-          if (page >= 0 && page < this.pageCount) {
-            this.transitionToPosition(-page * pageWidth);
-          }
-        },
-        resetOffset: function() {
-          if (this.selected !== null) {
-            offset.x = -this.selected * pageWidth;
-          }
-        },
-        setContentViewSize: function() {
-          var totalWidth = pageWidth * this.pageCount;
-          this.$.viewContent.style.width = "" + totalWidth.toString() + "px";
-        },
-        resetAnimations: function() {
-          if (isWebkit) {
-            this.$.viewContent.style.webkitTransition = "";
-          } else {
-            this.$.viewContent.style.transition = "";
+          setPageTransitionDuration(this.$.viewContent, this.transitionDuration);
+
+          this.$.viewContent.style.width = "" + (this.pageCount * 100) + "%";
+
+          var nodes = this.$.items.getDistributedNodes();
+
+          for (var i = 0; i < nodes.length; i++){
+            nodes[i].style.width = "" + (100 / this.pageCount) + "%";
           }
 
-        },
-        ready: function() {
-          // Initialize properties
-          // Get the number of pages by counting all the items
-          numberOfPages = this.$.items.getDistributedNodes().length;
-
-          // Get the size of the swipe area which is the size of the host
-          var boundingRect = this.getBoundingClientRect();
-          var containerHeight = boundingRect.height;
-          var containerWidth = boundingRect.width;
-
-          // If there are pages, initialize selected
-          // Note: this behavior is subject to change
-          if (this.pageCount > 0) {
-            if (this.selected === null) {
-              this.selected = 0;
-            }
-          }
-
-          // Set the height to the container height and the width to the
-          // container width
-          pageHeight = containerHeight;
-          pageWidth = containerWidth;
-          // Set the Css dimensions of the view content div
-          this.setContentViewSize();
-
-
-          // Set the track gestures handlers
-
-          // This is the trackstart event. It fires as soon as tracking
-          // of the finger begins
-          PolymerGestures.addEventListener(this, "trackstart", function(event) {
-            this.resetAnimations();
+          PolymerGestures.addEventListener(this, "trackstart", function(event){
+            resetAnimations(this.$.viewContent);
           });
 
-          // This is the track event. It fires continuously during tracking
-          // of the finger.
-          PolymerGestures.addEventListener(this, "track", function(event) {
-            var posX = offset.x + event.dx;
-            if (posX < 0 && posX > -pageWidth * (this.pageCount - 1)) {
-              this.transitionToPosition(posX);
+          PolymerGestures.addEventListener(this, "track", function(event){
+            var isFirstPage = (this.selected === 0);
+            var isLastPage  = (this.selected === (this.pageCount - 1));
+
+            var userIsSwipingLeftwards = (event.dx < 0);
+            var userIsSwipingRightwards = (event.dx > 0);
+
+            var tryingToSwipeToLeftOfFirstPage = userIsSwipingRightwards && isFirstPage;
+            var tryingToSwipeToRightOfLastPage = userIsSwipingLeftwards && isLastPage;
+
+            var tryingToSwipeToOutOfBoundsPage = tryingToSwipeToLeftOfFirstPage || tryingToSwipeToRightOfLastPage;
+
+
+            if (!tryingToSwipeToOutOfBoundsPage){
+              var position = -(this.selected - (event.dx / this.pageWidth)) * 100 / this.pageCount;
+              transitionToPosition(this.$.viewContent, position);
             }
 
           });
 
-          // This is the trackend event. It fires as soon as tracking of the
-          // finger ends.
-          PolymerGestures.addEventListener(this, "trackend", function(event) {
-            var userIsSwipingLeft = event.dx > 0;
-            var userIsSwipingRight = event.dx < 0;
-            var thresholdWasCrossed = Math.abs(event.dx) > this.threshold * pageWidth;
+          PolymerGestures.addEventListener(this, "trackend", function(event){
+            var userIsSwipingLeftwards = (event.dx < 0);
+            var userIsSwipingRightwards = (event.dx > 0);
 
-            setPageTransitionSpeedInCSS(this.$.viewContent, this.transitionDuration);
-            if (thresholdWasCrossed) {
-              if (userIsSwipingLeft) {
+            var thresholdWasCrossed = (Math.abs(event.dx) / this.pageWidth) > this.threshold;
+
+            setPageTransitionDuration(this.$.viewContent, this.transitionDuration);
+
+            if (thresholdWasCrossed){
+              if (userIsSwipingRightwards){
                 this.selected = Math.max(this.selected - 1, 0);
               }
-              if (userIsSwipingRight) {
+              if (userIsSwipingLeftwards){
                 this.selected = Math.min(this.selected + 1, this.pageCount - 1);
               }
+            }else{
+              transitionToPage(this.$.viewContent, this.selected, this.pageCount);
             }
-            this.transitionToPage(this.selected);
-            this.resetOffset();
           });
         }
       });
-
     })();
   </script>
 </polymer-element>
