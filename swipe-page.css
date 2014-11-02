@@ -1,4 +1,4 @@
 :host, .pageContent {
-  height: 100%;
+  height: inherit;
   float: left;
 }
