@@ -5,9 +5,6 @@ See the [component page](http://TheSeamau5.github.io/swipe-pages) for more infor
 
 ## Installation
 
-With bower:
-
-    bower install swipe-pages
 
 ## Basic Example
 
