@@ -1,0 +1,26 @@
+{
+  "name": "swipe-pages",
+  "version": "0.2.0",
+  "ignore" : [
+    ".editorconfig",
+    ".jshintrc",
+    ".gitignore",
+    ".bowerrc",
+    "test",
+    "bower.json",
+    ".gitattributes"
+  ],
+  "keywords": [
+    "seed",
+    "polymer",
+    "web-components"
+  ],
+  "main": "swipe-pages.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.4.0"
+  },
+  "devDependencies": {
+    "polymer-test-tools": "Polymer/polymer-test-tools#^0.4.0",
+    "paper-tabs" : "Polymer/paper-tabs#master"
+  }
+}

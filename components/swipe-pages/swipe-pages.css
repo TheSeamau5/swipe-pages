@@ -1,0 +1,25 @@
+:host {
+  height: 100%;
+  overflow: hidden;
+}
+
+.container{
+  height: 100%;
+  height: fill-available;
+  height: -webkit-fill-available;
+  
+  width: 100%;
+}
+
+.viewContent{
+  height: inherit;
+
+  /* The following is a hack to solve a chrome bug where the page
+     flashes white. This bug still exists in chrome for android while
+     it seems to have been solved in chrome for mac.
+
+     Do not touch the following lines under any circumstances!
+  */
+  backface-visibility: hidden;
+  transform: scale(1);
+}

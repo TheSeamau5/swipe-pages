@@ -1,0 +1,232 @@
+<!--
+Copyright (c) 2014 Hassan Hayat <hassan.hayat7@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+-->
+
+<!--
+Provides horizontally swipeable pages.
+
+The `swipe-pages` element must have `swipe-page` elements as its children.
+This ensures readibility of code and a given amount of control on the behavior
+of individual pages.
+
+A `swipe-pages` element is an element containing several `swipe-page` elements
+as subviews. The `swipe-pages` element is given a certain width and height
+through CSS and then each individual `swipe-page` will automatically take of the full size
+of the parent element. This means that the `swipe-page` elements are assumed
+to all have the exact same size which they all derive from the `swipe-pages`
+element.
+
+###Example:
+
+    <swipe-pages selected = "1">
+      <swipe-page>Hey I'm page 0</swipe-page>
+      <swipe-page><h1>Hi, I'm on page 1</h1></swipe-page>
+      <swipe-page><p>I am page 2 and I totally rock!</p></swipe-page>
+    </swipe-pages>
+
+Swiping left moves to the next page while swiping right moves to the previous page.
+This behavior is very typical on mobile applications.
+The key to this element is that when swiping, the page follows your finger
+horizontally so as to give the user immediate feedback that he/she is swiping
+between pages.
+
+Pages only transition when the swipe gesture has crossed a certain threshold
+which is exposed by the `threshold` attribute.
+
+###Example:
+
+    <swipe-pages threshold = "0.5">
+      <swipe-page> ... </swipe-page>
+      <swipe-page> ... </swipe-page>
+    </swipe-pages>
+
+By setting the `threshold` to 0.5, you ensure that the page will only transition
+if the swipe gesture has crossed half the `swipe-pages` width horizontally.
+
+`threshold` accepts values between 0 and 1.
+
+A `threshold` value of 0 implies that any swipe gesture will cause a page
+transition. A `threshold` value of 1 implies that no page transition is possible
+as you must cross more that the entire size of the `swipe-pages` element horizontally
+which is impossible given that the size of the `swipe-pages` element is well-defined.
+
+@class swipe-pages
+@blurb Provides horizontally swipeable pages.
+@status alpha
+-->
+
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<link rel="import" href="swipe-page.html">
+
+
+<polymer-element name="swipe-pages" attributes="selected threshold transitionDuration">
+  <template>
+    <link rel="stylesheet" href="swipe-pages.css">
+    <div class="container">
+      <div class="viewContent" id="viewContent">
+        <content class="page" id="items" select="swipe-page"></content>
+      </div>
+    </div>
+  </template>
+  <script>
+    (function(){
+      'use strict';
+
+      var isWebkit = document.body.style.webkitTransform !== undefined;
+
+      var transitionToPosition = function(element, position){
+        var transition = "translateX(" + position.toString() + "%)";
+        if (isWebkit){
+          element.style.webkitTransform = transition;
+        }else{
+          element.style.transform = transition;
+        }
+      };
+
+      var transitionToPage = function(element, pageNumber, pageCount){
+        transitionToPosition(element, -pageNumber / pageCount * 100);
+      };
+
+      var resetAnimations = function(element){
+        if (isWebkit){
+          element.style.webkitTransition = "";
+        }else{
+          element.style.transition = "";
+        }
+      };
+
+      var setPageTransitionDuration = function(element, duration){
+        if (isWebkit){
+          element.style.webkitTransition = "-webkit-transform " + duration.toString() + "s ease-out";
+        }else{
+          element.style.transition = "transform " + duration.toString() + "s ease-out";
+        }
+      };
+
+
+      Polymer({
+
+        get pageCount(){
+          return this.$.items.getDistributedNodes().length;
+        },
+
+        get pageWidth(){
+          return this.getBoundingClientRect().width;
+        },
+
+        publish : {
+          /**
+          * Specifies the index of the currently selected page
+          * @attribute selected
+          * @default 0
+          * @type Number
+          */
+          selected: 0,
+
+          /**
+          * Specifies the threshold the user must swipe in order to
+          * cause a page transition.
+          * Only accepts values between 0 and 1.
+          * @attribute threshold
+          * @default 0.3
+          * @type Number
+          */
+          threshold: 0.3,
+
+          /**
+          * Specifies the duration (in seconds) of the transition from one
+          * page to another
+          * @attribute transitionDuration
+          * @default 0.3
+          * @type Number
+          */
+          transitionDuration: 0.3
+        },
+
+        selectedChanged: function(oldValue, newValue){
+          if (newValue >= this.pageCount || newValue < 0){
+            throw "Tried to selected an undefined page.";
+          }
+          transitionToPage(this.$.viewContent, newValue, this.pageCount);
+        },
+
+        ready: function(){
+
+          setPageTransitionDuration(this.$.viewContent, this.transitionDuration);
+
+          this.$.viewContent.style.width = "" + (this.pageCount * 100) + "%";
+
+          var nodes = this.$.items.getDistributedNodes();
+
+          for (var i = 0; i < nodes.length; i++){
+            nodes[i].style.width = "" + (100 / this.pageCount) + "%";
+          }
+
+          PolymerGestures.addEventListener(this, "trackstart", function(event){
+            resetAnimations(this.$.viewContent);
+          });
+
+          PolymerGestures.addEventListener(this, "track", function(event){
+            var isFirstPage = (this.selected === 0);
+            var isLastPage  = (this.selected === (this.pageCount - 1));
+
+            var userIsSwipingLeftwards = (event.dx < 0);
+            var userIsSwipingRightwards = (event.dx > 0);
+
+            var tryingToSwipeToLeftOfFirstPage = userIsSwipingRightwards && isFirstPage;
+            var tryingToSwipeToRightOfLastPage = userIsSwipingLeftwards && isLastPage;
+
+            var tryingToSwipeToOutOfBoundsPage = tryingToSwipeToLeftOfFirstPage || tryingToSwipeToRightOfLastPage;
+
+
+            if (!tryingToSwipeToOutOfBoundsPage){
+              var position = -(this.selected - (event.dx / this.pageWidth)) * 100 / this.pageCount;
+              transitionToPosition(this.$.viewContent, position);
+            }
+
+          });
+
+          PolymerGestures.addEventListener(this, "trackend", function(event){
+            var userIsSwipingLeftwards = (event.dx < 0);
+            var userIsSwipingRightwards = (event.dx > 0);
+
+            var thresholdWasCrossed = (Math.abs(event.dx) / this.pageWidth) > this.threshold;
+
+            setPageTransitionDuration(this.$.viewContent, this.transitionDuration);
+
+            if (thresholdWasCrossed){
+              if (userIsSwipingRightwards){
+                this.selected = Math.max(this.selected - 1, 0);
+              }
+              if (userIsSwipingLeftwards){
+                this.selected = Math.min(this.selected + 1, this.pageCount - 1);
+              }
+            }else{
+              transitionToPage(this.$.viewContent, this.selected, this.pageCount);
+            }
+          });
+        }
+      });
+    })();
+  </script>
+</polymer-element>
