@@ -20,6 +20,7 @@
     "polymer": "Polymer/polymer#^0.4.0"
   },
   "devDependencies": {
-    "polymer-test-tools": "Polymer/polymer-test-tools#^0.4.0"
+    "polymer-test-tools": "Polymer/polymer-test-tools#^0.4.0",
+    "paper-tabs" : "Polymer/paper-tabs#master"
   }
 }
