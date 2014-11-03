@@ -4,6 +4,11 @@ swipe-pages
 See the [component page](http://TheSeamau5.github.io/swipe-pages) for more information.
 
 
+## Installation
+With Bower:
+
+    bower install swipe-pages
+
 ## Basic Example
 
     <swipe-pages>
