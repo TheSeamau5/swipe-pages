@@ -1,4 +1,9 @@
-:host, .pageContent {
-  height: inherit;
-  float: left;
+:host, .pageContainer{
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+.pageContainer{
+	overflow-y: auto;
 }

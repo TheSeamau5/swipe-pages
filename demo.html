@@ -2,63 +2,21 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
   <title>swipe-pages Demo</title>
 
   <script src="../platform/platform.js"></script>
   <link rel="import" href="swipe-pages.html">
-  <link rel="import" href="../paper-tabs/paper-tabs.html">
 
 </head>
-<body unresolved fullbleed layout horizontal>
-  <div flex layout vertical>
-    <template is="auto-binding">
-      <paper-tabs selected = "{{selectedPage}}">
-        <paper-tab>Page 0</paper-tab>
-        <paper-tab>Page 1</paper-tab>
-        <paper-tab>Page 2</paper-tab>
-        <paper-tab>Page 3</paper-tab>
-      </paper-tabs>
-      <swipe-pages selected = "{{selectedPage}}" flex>
-        <swipe-page layout vertical center center-justified>
-          <h1>Yay! I am page 0. </h1>
-          <p>
-            Swipe over to the next page.
-          </p>
-        </swipe-page>
-        <swipe-page layout vertical center center-justified>
-          <h1>Welcome to Page 1 </h1>
-          <p>
-            As you can see, there are lots of stuff happening here...
-          </p>
-          <p>
-            ...almost
-          </p>
-          <p>
-            Swipe over to the next page if you want.
-          </p>
-        </swipe-page>
-        <swipe-page layout vertical center center-justified>
-          <h1>Ugh... you scrolled here... </h1>
-          <p>
-            Can't you go somewhere else?
-          </p>
-        </swipe-page>
-        <swipe-page layout vertical center center-justified>
-          <h1>Success! </h1>
-          <h2>You have reached page 3</h2>
-          <p>
-            As you can see, I'm the last page.
-          </p>
-          <p>
-            You can't swipe any further.
-          </p>
-        </swipe-page>
-      </swipe-pages>
-    </template>
-  </div>
-
+<body unresolved fullbleed layout vertical center center-justified>
+  <swipe-pages>
+    <swipe-page style="background-color: blue" layout vertical>
+      <div style="top: 50%; height: 100%; width: 100%; background-color:beige"></div>
+    </swipe-page>
+    <swipe-page style="background-color: red"></swipe-page>
+    <swipe-page style="background-color: green"></swipe-page>
+    <swipe-page style="background-color: indigo"></swipe-page>
+  </swipe-pages>
 
 </body>
 </html>
