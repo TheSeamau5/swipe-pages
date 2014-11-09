@@ -14,7 +14,7 @@ See the [component page](http://TheSeamau5.github.io/swipe-pages) for more infor
 - [ ] Add option to mark each page with a browser tag to resume state from url
 - [ ] Include sane defaults for hardware acceleration (translateZ hack in the right places)
 - [ ] Make a nicer demo with more features to better explain the element
-
+- [ ] Add option to reverse direction for rtl languages
 ## Installation
 With Bower:
 
