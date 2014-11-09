@@ -15,6 +15,7 @@ See the [component page](http://TheSeamau5.github.io/swipe-pages) for more infor
 - [x] Include sane defaults for hardware acceleration (translateZ hack in the right places)
 - [ ] Make a nicer demo with more features to better explain the element
 - [ ] Add option to reverse direction for rtl languages
+- [ ] Do some more rigorous testing to ensure stability!!!
 
 
 ## Installation
