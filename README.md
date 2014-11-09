@@ -7,12 +7,12 @@ See the [component page](http://TheSeamau5.github.io/swipe-pages) for more infor
 ## TODO
 
 - [x] Improve page scroll stability
-- [ ] Improve page scroll performance
+- [x] Improve page scroll performance
 - [ ] Improve performance in swiping between pages (by reusing pages?)
 - [x] Have pages scroll down independently of each other
 - [ ] Make element play nicer with the polymer core-elements (like core-scroll-header-panel and core-list)
 - [ ] Add option to mark each page with a browser tag to resume state from url
-- [ ] Include sane defaults for hardware acceleration (translateZ hack in the right places)
+- [x] Include sane defaults for hardware acceleration (translateZ hack in the right places)
 - [ ] Make a nicer demo with more features to better explain the element
 - [ ] Add option to reverse direction for rtl languages
 
