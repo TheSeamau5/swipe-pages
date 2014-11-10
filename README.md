@@ -16,6 +16,7 @@ See the [component page](http://TheSeamau5.github.io/swipe-pages) for more infor
 - [ ] Make a nicer demo with more features to better explain the element
 - [ ] Add option to reverse direction for rtl languages
 - [ ] Do some more rigorous testing to ensure stability!!!
+- [ ] Allow for individual pages to be created dynamically. 
 
 
 ## Installation
