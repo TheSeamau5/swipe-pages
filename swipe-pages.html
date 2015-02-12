@@ -70,7 +70,7 @@ which is impossible given that the size of the `swipe-pages` element is well-def
 
     <link rel="stylesheet" href="swipe-pages.css" />
 
-    <div id="pagesContainer" class="pagesContainer" touch-action="pan-y">
+    <div id="pagesContainer" class="pagesContainer" touch-action="pan-y" layout horizontal>
       <content id="pages" select="swipe-page"></content>
     </div>
 
@@ -81,14 +81,6 @@ which is impossible given that the size of the `swipe-pages` element is well-def
     'use strict';
 
     var isWebkit = document.body.style.webkitTransform !== undefined;
-
-    var getPositionArray = function(length){
-      var a = [];
-      for (var i = 0; i < length; i++){
-        a[i] = (i * 100);
-      }
-      return a;
-    };
 
     var resetAnimations = function(element){
 
@@ -147,14 +139,6 @@ which is impossible given that the size of the `swipe-pages` element is well-def
       get pageWidth(){
         
         return this.getBoundingClientRect().width;
-      },
-
-      resetPositions : function(){
-        var positionArray = getPositionArray(this.pageCount);
-        for (var i = 0; i < this.pageCount; i++){
-          this.pages[i].style.left = ""  + (positionArray[i] / this.pageCount) + "%";
-          this.pages[i].style.top  = "-" + positionArray[i].toString() + "%";
-        }
       },
 
       resetWidths : function(){
@@ -264,7 +248,6 @@ which is impossible given that the size of the `swipe-pages` element is well-def
       },
 
       ready: function(){
-        this.resetPositions();
         this.resetWidths();
         this.setupEventHandlers();
       }
