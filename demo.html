@@ -7,15 +7,32 @@
   <script src="../webcomponentsjs/webcomponents.js"></script>
   <link rel="import" href="swipe-pages.html">
 
+  <style>
+    body {
+      font-family: "Open Sans", sans-serif;
+    }
+    h1 {
+      font-size: 10em;
+      text-align: center;
+      color: white;
+    }
+  </style>
 </head>
 <body unresolved fullbleed layout vertical center center-justified>
   <swipe-pages>
-    <swipe-page style="background-color: blue" layout vertical>
+    <swipe-page style="background-color: #283593" layout vertical>
+      <h1>1</h1>
       <div style="top: 50%; height: 100%; width: 100%; background-color:beige"></div>
     </swipe-page>
-    <swipe-page style="background-color: red"></swipe-page>
-    <swipe-page style="background-color: green"></swipe-page>
-    <swipe-page style="background-color: indigo"></swipe-page>
+    <swipe-page style="background-color: #C62828">
+      <h1>2</h1>
+    </swipe-page>
+    <swipe-page style="background-color: #2E7D32">
+      <h1>3</h1>
+    </swipe-page>
+    <swipe-page style="background-color: #4A148C">
+      <h1>4</h1>
+    </swipe-page>
   </swipe-pages>
 
 </body>
