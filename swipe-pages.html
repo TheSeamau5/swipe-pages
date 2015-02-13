@@ -219,15 +219,8 @@ which is impossible given that the size of the `swipe-pages` element is well-def
         });
       },
 
-      publish: {
 
-        /**
-          * Specifies the index of the currently selected page
-          * @attribute selected
-          * @default 0
-          * @type Number
-          */
-        threshold: 0.3,
+      publish: {
 
         /**
           * Specifies the threshold the user must swipe in order to
@@ -237,13 +230,21 @@ which is impossible given that the size of the `swipe-pages` element is well-def
           * @default 0.3
           * @type Number
           */
-        transitionDuration: 0.3,
+        threshold: 0.3,
 
         /**
           * Specifies the duration (in seconds) of the transition from one
           * page to another
           * @attribute transitionDuration
           * @default 0.3
+          * @type Number
+          */
+        transitionDuration: 0.3,
+
+        /**
+          * Specifies the index of the currently selected page
+          * @attribute selected
+          * @default 0
           * @type Number
           */
         selected: 0,
