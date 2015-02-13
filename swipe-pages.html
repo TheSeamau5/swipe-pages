@@ -64,7 +64,7 @@ which is impossible given that the size of the `swipe-pages` element is well-def
 <link rel="import" href="swipe-page.html">
 
 
-<polymer-element name="swipe-pages" attributes="selected threshold transitionDuration">
+<polymer-element name="swipe-pages" attributes="selected threshold velocityThreshold transitionDuration">
 
   <template>
 
@@ -134,6 +134,14 @@ which is impossible given that the size of the `swipe-pages` element is well-def
 
     Polymer({
 
+      /*
+       * The timestamp of the trackStart event, used for calculating
+       * time difference and then velocity at trackEnd.
+       * Private property.
+       * @type Number
+       */
+      trackStartTime: 0,
+
       get pageCount(){
 
         return this.$.pages.getDistributedNodes().length;  
@@ -173,6 +181,7 @@ which is impossible given that the size of the `swipe-pages` element is well-def
 
       setupTrackStartEventHandler : function(){
         PolymerGestures.addEventListener(this, "trackstart", function(event){
+          this.trackStartTime = event.timeStamp;
           resetAnimations(this);
         });
       },
@@ -201,12 +210,15 @@ which is impossible given that the size of the `swipe-pages` element is well-def
         PolymerGestures.addEventListener(this, "trackend", function(event){
           var userIsSwipingLeftwards = (event.dx < 0);
           var userIsSwipingRightwards = (event.dx > 0);
+          var dt = event.timeStamp - this.trackStartTime;
+          var v = event.dx / dt;
 
           var thresholdWasCrossed = (Math.abs(event.dx) / this.pageWidth) > this.threshold;
+          var velocityThresholdWasCrossed = Math.abs(v) > this.velocityThreshold;
 
           setAnimationDuration(this.transitionDuration, this);
 
-          if (thresholdWasCrossed){
+          if (thresholdWasCrossed || velocityThresholdWasCrossed){
             if (userIsSwipingRightwards){
               this.selected = Math.max(this.selected - 1, 0);
             }
@@ -216,6 +228,9 @@ which is impossible given that the size of the `swipe-pages` element is well-def
           }else{
             moveToPage(this.selected, this);
           }
+
+          // reset trackStartTime value
+          this.trackStartTime = 0;
         });
       },
 
@@ -231,6 +246,17 @@ which is impossible given that the size of the `swipe-pages` element is well-def
           * @type Number
           */
         threshold: 0.3,
+
+        /**
+          * Specifies the velocity threshold the swipe has to pass to
+          * cause a page transition UNLESS the distance was enough.
+          * Expressed in px/ms (pixels per millisecond),
+          * positive numbers only.
+          * @attribute velocityThreshold
+          * @default 1.0
+          * @type Number
+          */
+        velocityThreshold: 1.0,
 
         /**
           * Specifies the duration (in seconds) of the transition from one
