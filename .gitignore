@@ -1,5 +1,8 @@
 node_modules
 dist
+npm-debug.log
+bower_components
+polymer
 .sass-cache
 .tmp
 .editorconfig
