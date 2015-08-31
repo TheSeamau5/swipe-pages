@@ -184,7 +184,6 @@ which is impossible given that the size of the `swipe-pages` element is well-def
         var positionArray = getPositionArray(this.pageCount);
         for (var i = 0; i < this.pageCount; i++){
           this.pages[i].style.left = ""  + (positionArray[i] / this.pageCount) + "%";
-          this.pages[i].style.top  = "-" + positionArray[i].toString() + "%";
         }
       },
       resetWidths : function(){
