@@ -4,3 +4,4 @@ dist
 .tmp
 .editorconfig
 .jshintrc
+bower_components/

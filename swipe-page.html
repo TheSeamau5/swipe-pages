@@ -1,30 +1,34 @@
 <link rel="import" href="../polymer/polymer.html">
 
-
-<polymer-element name="swipe-page" attributes="">
-
+<dom-module name="swipe-page">
   <template>
+    <style>
+    :host, .pageContainer{
+      display: block;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+    }
 
-    <link rel="stylesheet" href="swipe-page.css" />
+    .pageContainer{
+      overflow-y: auto;
+      background-color: rgba(255,255,255,0);
 
-    <div id="pageContainer" class="pageContainer">
-    	<content></content>
-    </div>
-
-
+      /*This is for a bug in chrome where pages flash white. Why? I dunno.
+        But, these two lines solve the problem... so... DO NOT TOUCH THIS!*/
+      backface-visibility: hidden;
+      transform: scale(1);
+    }
+    </style>
+    <content id="pageContainer" class="pageContainer"></content>
   </template>
 
   <script>
-    (function(){
-      'use strict';
-
+    (function() {
       Polymer({
-
+        is: 'swipe-page'
       });
-
-    })();
-
-
+    })()
   </script>
 
-</polymer-element>
+</dom-module>

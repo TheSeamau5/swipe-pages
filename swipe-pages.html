@@ -63,14 +63,33 @@ which is impossible given that the size of the `swipe-pages` element is well-def
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="swipe-page.html">
 
-
-<polymer-element name="swipe-pages" attributes="selected threshold transitionDuration">
+<dom-module id="swipe-pages">
 
   <template>
+    <style>
+      :host, .pagesContainer {
+        display: block;
+        height: 100%;
+        width: 100%;
+      }
 
-    <link rel="stylesheet" href="swipe-pages.css" />
+      :host{
+        overflow: hidden;
+      }
 
-    <div id="pagesContainer" class="pagesContainer" touch-action="pan-y">
+      .pagesContainer{
+        overflow-x : hidden;
+        overflow-y: hidden;
+        background-color: rgba(255,255,255,0);
+        transform: translateZ(0);
+      }
+
+      content[select="swipe-page"]::content *{
+        position: relative;
+      }
+    </style>
+
+    <div id="pagesContainer" class="pagesContainer">
       <content id="pages" select="swipe-page"></content>
     </div>
 
@@ -91,7 +110,6 @@ which is impossible given that the size of the `swipe-pages` element is well-def
     };
 
     var resetAnimations = function(element){
-
       setTransition("", element);
     };
 
@@ -128,128 +146,99 @@ which is impossible given that the size of the `swipe-pages` element is well-def
     };
 
     var resetScrollTop = function(element){
-
-      element.$.pageContainer.scrollTop = 0;
+      if (element) {
+        element.$.pageContainer.scrollTop = 0;
+      }
     };
 
     Polymer({
-
+      is: 'swipe-pages',
+      properties: {
+        threshold: Number,
+        transitionDuration: Number,
+        selected: {
+          type: Number,
+          value: 0,
+          notify: true,
+          observer: 'selectedChanged'
+        }
+      },
+      listeners: {
+        'track': 'trackHandler'
+      },
+      hostAttributes: {
+        threshold: 0.3,
+        transitionDuration: 0.3,
+        selected: 0
+      },
       get pageCount(){
-
-        return this.$.pages.getDistributedNodes().length;  
+        return Polymer.dom(this.$.pages).getDistributedNodes().length;
       },
-
       get pages(){
-
-        return this.$.pages.getDistributedNodes();
+        return Polymer.dom(this.$.pages).getDistributedNodes();;
       },
-
       get pageWidth(){
-        
         return this.getBoundingClientRect().width;
       },
-
       resetPositions : function(){
         var positionArray = getPositionArray(this.pageCount);
         for (var i = 0; i < this.pageCount; i++){
           this.pages[i].style.left = ""  + (positionArray[i] / this.pageCount) + "%";
-          this.pages[i].style.top  = "-" + positionArray[i].toString() + "%";
         }
       },
-
       resetWidths : function(){
         this.$.pagesContainer.style.width = "" + (100 * this.pageCount) + "%";
         for (var i = 0; i < this.pageCount; i++){
           this.pages[i].style.width = "" + (100 / this.pageCount) + "%";
         }
       },
-      
 
-      setupEventHandlers : function(){
-        this.setupTrackStartEventHandler();
-        this.setupTrackEventHandler();
-        this.setupTrackEndEventHandler();
-      },
+      trackHandler: function(event) {
+        switch (event.detail.state) {
+          case 'start':
+            resetAnimations(this);
+            break;
 
-      setupTrackStartEventHandler : function(){
-        PolymerGestures.addEventListener(this, "trackstart", function(event){
-          resetAnimations(this);
-        });
-      },
+          case 'track':
+            var isFirstPage = (this.selected === 0);
+            var isLastPage  = (this.selected === (this.pageCount - 1));
 
-      setupTrackEventHandler : function(){
-        PolymerGestures.addEventListener(this, "track", function(event){
-          var isFirstPage = (this.selected === 0);
-          var isLastPage  = (this.selected === (this.pageCount - 1));
+            var userIsSwipingLeftwards = (event.detail.dx < 0);
+            var userIsSwipingRightwards = (event.detail.dx > 0);
 
-          var userIsSwipingLeftwards = (event.dx < 0);
-          var userIsSwipingRightwards = (event.dx > 0);
+            var tryingToSwipeToLeftOfFirstPage = userIsSwipingRightwards && isFirstPage;
+            var tryingToSwipeToRightOfLastPage = userIsSwipingLeftwards && isLastPage;
 
-          var tryingToSwipeToLeftOfFirstPage = userIsSwipingRightwards && isFirstPage;
-          var tryingToSwipeToRightOfLastPage = userIsSwipingLeftwards && isLastPage;
+            var tryingToSwipeToOutOfBoundsPage = tryingToSwipeToLeftOfFirstPage || tryingToSwipeToRightOfLastPage;
 
-          var tryingToSwipeToOutOfBoundsPage = tryingToSwipeToLeftOfFirstPage || tryingToSwipeToRightOfLastPage;
-          
-          if (!tryingToSwipeToOutOfBoundsPage){
-            var position = -(this.selected - (event.dx / this.pageWidth)) * 100 / this.pageCount;
-            moveToPosition(position, this);
-          }
-        });
-      },
-      
-      setupTrackEndEventHandler : function(){
-        PolymerGestures.addEventListener(this, "trackend", function(event){
-          var userIsSwipingLeftwards = (event.dx < 0);
-          var userIsSwipingRightwards = (event.dx > 0);
-
-          var thresholdWasCrossed = (Math.abs(event.dx) / this.pageWidth) > this.threshold;
-
-          setAnimationDuration(this.transitionDuration, this);
-
-          if (thresholdWasCrossed){
-            if (userIsSwipingRightwards){
-              this.selected = Math.max(this.selected - 1, 0);
+            if (!tryingToSwipeToOutOfBoundsPage){
+              var position = -(this.selected - (event.detail.dx / this.pageWidth)) * 100 / this.pageCount;
+              moveToPosition(position, this);
             }
-            if (userIsSwipingLeftwards){
-              this.selected = Math.min(this.selected + 1, this.pageCount - 1);
+            break
+
+          case 'end':
+            var userIsSwipingLeftwards = (event.detail.dx < 0);
+            var userIsSwipingRightwards = (event.detail.dx > 0);
+
+            var thresholdWasCrossed = (Math.abs(event.detail.dx) / this.pageWidth) > this.threshold;
+            setAnimationDuration(this.getAttribute('transitionDuration'), this);
+
+            if (thresholdWasCrossed){
+              if (userIsSwipingRightwards){
+                this.selected = Math.max(this.selected - 1, 0);
+              }
+              if (userIsSwipingLeftwards){
+                this.selected = Math.min(this.selected + 1, this.pageCount - 1);
+              }
+            }else{
+              moveToPage(this.selected, this);
             }
-          }else{
-            moveToPage(this.selected, this);
-          }
-        });
+            break
+        }
       },
 
-      publish: {
-
-        /**
-          * Specifies the index of the currently selected page
-          * @attribute selected
-          * @default 0
-          * @type Number
-          */
-        threshold: 0.3,
-
-        /**
-          * Specifies the threshold the user must swipe in order to
-          * cause a page transition.
-          * Only accepts values between 0 and 1.
-          * @attribute threshold
-          * @default 0.3
-          * @type Number
-          */
-        transitionDuration: 0.3,
-
-        /**
-          * Specifies the duration (in seconds) of the transition from one
-          * page to another
-          * @attribute transitionDuration
-          * @default 0.3
-          * @type Number
-          */
-        selected: 0,
-      },
-
-      selectedChanged : function(oldValue, newValue){
+      selectedChanged : function(newValue, oldValue){
         if (newValue >= this.pageCount || newValue < 0){
           var errorMessage = "Page " + newValue.toString() + " is not a defined page. There are only " + this.pageCount.toString() + " pages.";
           throw errorMessage;
@@ -257,23 +246,22 @@ which is impossible given that the size of the `swipe-pages` element is well-def
         moveToPage(newValue, this);
 
         var self = this;
-        window.setTimeout(function(){ 
+        window.setTimeout(function(){
           resetScrollTop(self.pages[oldValue]);
         }, self.transitionDuration * 1000);
-        
+
       },
 
       ready: function(){
         this.resetPositions();
         this.resetWidths();
-        this.setupEventHandlers();
       }
 
     });
 
   })();
-    
+
 
   </script>
 
-</polymer-element>
+</dom-module>

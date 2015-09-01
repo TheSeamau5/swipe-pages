@@ -1,6 +1,6 @@
 {
   "name": "swipe-pages",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "keywords": [
     "seed",
     "polymer",
@@ -8,9 +8,9 @@
   ],
   "main": "swipe-pages.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^0.4.0"
+    "polymer": "Polymer/polymer#^1.0.0"
   },
   "devDependencies": {
-    "polymer-test-tools": "Polymer/polymer-test-tools#^0.4.0"
+    "test-fixture": "PolymerElements/test-fixture#^1.0.0"
   }
 }
